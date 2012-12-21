@@ -373,7 +373,7 @@ fi
 
 # If we have no git directory then we are probably a tarball distribution
 # and shouldn't attempt to load submodules
-if [ ! -e ${CFG_SRC_DIR}.git ]
+if [ ! -e "${CFG_SRC_DIR}.git" ]
 then
     probe CFG_GIT          git
     msg "git: no git directory. disabling submodules"
@@ -634,7 +634,7 @@ step_msg "configuring submodules"
 # Have to be in the top of src directory for this
 if [ -z $CFG_DISABLE_MANAGE_SUBMODULES ]
 then
-    cd ${CFG_SRC_DIR}
+    cd "${CFG_SRC_DIR}"
 
     msg "git: submodule sync"
     "${CFG_GIT}" submodule --quiet sync
@@ -662,28 +662,28 @@ then
     "${CFG_GIT}" submodule --quiet foreach --recursive git checkout .
     need_ok "git failed"
 
-    cd ${CFG_BUILD_DIR}
+    cd "${CFG_BUILD_DIR}"
 fi
 
 # Configure llvm, only if necessary
 step_msg "looking at LLVM"
-CFG_LLVM_SRC_DIR=${CFG_SRC_DIR}src/llvm/
+CFG_LLVM_SRC_DIR="${CFG_SRC_DIR}src/llvm/"
 for t in $CFG_TARGET_TRIPLES
 do
     do_reconfigure=1
 
-    if [ -z $CFG_LLVM_ROOT ]
+    if [ -z "$CFG_LLVM_ROOT" ]
     then
-        LLVM_BUILD_DIR=${CFG_BUILD_DIR}llvm/$t
+        LLVM_BUILD_DIR="${CFG_BUILD_DIR}llvm/$t"
         if [ ! -z "$CFG_DISABLE_OPTIMIZE_LLVM" ]
         then
             LLVM_DBG_OPTS=""
             # Just use LLVM straight from its build directory to
             # avoid 'make install' time
-            LLVM_INST_DIR=$LLVM_BUILD_DIR/Debug+Asserts
+            LLVM_INST_DIR="$LLVM_BUILD_DIR/Debug+Asserts"
         else
             LLVM_DBG_OPTS="--enable-optimized"
-            LLVM_INST_DIR=$LLVM_BUILD_DIR/Release+Asserts
+            LLVM_INST_DIR="$LLVM_BUILD_DIR/Release+Asserts"
         fi
     else
         msg "not reconfiguring LLVM, external LLVM root"
@@ -704,8 +704,8 @@ do
         do
             config_status="${CFG_BUILD_DIR}llvm/$t/config.status"
             if test -e ${index} -a \
-                    -e ${config_status} -a \
-                    ${config_status} -nt ${index}
+                    -e "${config_status}" -a \
+                    "${config_status}" -nt ${index}
             then
                 msg "not reconfiguring LLVM, config.status is fresh"
                 do_reconfigure=0
@@ -783,18 +783,18 @@ do
         export CXXFLAGS
         export LDFLAGS
 
-        cd $LLVM_BUILD_DIR
+        cd "$LLVM_BUILD_DIR"
         case $CFG_SRC_DIR in
             /* | [a-z]:* | [A-Z]:*)
-                ${CFG_LLVM_SRC_DIR}configure $LLVM_FLAGS
+                "${CFG_LLVM_SRC_DIR}configure" $LLVM_FLAGS
                 ;;
             *)
-                ${CFG_BUILD_DIR}${CFG_LLVM_SRC_DIR}configure \
+                "${CFG_BUILD_DIR}${CFG_LLVM_SRC_DIR}configure" \
                     $LLVM_FLAGS
                 ;;
         esac
         need_ok "LLVM configure failed"
-        cd $CFG_BUILD_DIR
+        cd "$CFG_BUILD_DIR"
     fi
 
     # Construct variables for LLVM build and install directories for
